@@ -10,7 +10,7 @@ app.on("connection", (socket) => {
   sendSystemStatus(socket);
 });
 
-app.listen(1337, "127.0.0.1");
+app.listen(5000);
 
 function sendSystemStatus(socket: net.Socket) {
   socket.write(JSON.stringify(getSystemState()));
