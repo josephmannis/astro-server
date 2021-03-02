@@ -1,5 +1,5 @@
 import * as net from "net";
-import { Message, parseMessage } from "./protocol";
+import { isNewSpatialAnchorMessage, isRequestActiveSpatialAnchorsMessage, Message, parseMessage } from "./protocol";
 import { getSystemState } from "./data";
 
 const app = net.createServer(socket => {
@@ -9,10 +9,28 @@ const app = net.createServer(socket => {
 app.on("connection", socket => {
   socket.on('data', data => {
     console.log("Data");
+    console.log(data.toString("utf-8"));
     const message = parseMessage(data.toString("utf-8"));
     console.log(message);
-    if (message) {
 
+    if (message) {
+      if (isNewSpatialAnchorMessage(message)) {
+        sendMessage(socket, {
+          type: "NEW_SPATIAL_ANCHOR_RECEIVED",
+          payload: {
+            anchorId: message.payload.anchorId
+          }
+        })
+      }
+
+      if (isRequestActiveSpatialAnchorsMessage(message)) {
+        sendMessage(socket, {
+          type: "ACTIVE_SPATIAL_ANCHORS",
+          payload: {
+            activeAnchorIds: []
+          }
+        });
+      }
     }
   });
 
