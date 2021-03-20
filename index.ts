@@ -1,63 +1,50 @@
 import * as net from "net";
-import { LifeSupportState, SystemState, NavigationState } from "types";
+import { isNewSpatialAnchorMessage, isRequestActiveSpatialAnchorsMessage, Message, parseMessage } from "./protocol";
+import { getSystemState } from "./data";
 
-const app = net.createServer(function (socket) {
+const app = net.createServer(socket => {
   socket.pipe(socket);
 });
 
-app.on("connection", (socket) => {
-  socket.write("Hi there.");
-  sendSystemStatus(socket);
+app.on("connection", socket => {
+  socket.on('data', data => {
+    console.log("Data");
+    console.log(data.toString("utf-8"));
+    const message = parseMessage(data.toString("utf-8"));
+    console.log(message);
+
+    if (message) {
+      if (isNewSpatialAnchorMessage(message)) {
+        sendMessage(socket, {
+          type: "NEW_SPATIAL_ANCHOR_RECEIVED",
+          payload: {
+            anchorId: message.payload.anchorId
+          }
+        })
+      }
+
+      if (isRequestActiveSpatialAnchorsMessage(message)) {
+        sendMessage(socket, {
+          type: "ACTIVE_SPATIAL_ANCHORS",
+          payload: {
+            activeAnchorIds: []
+          }
+        });
+      }
+    }
+  });
+
+  sendMessage(socket, {
+    type: "SYSTEM_STATE",
+    payload: getSystemState()
+  });
+  // socket.end();
 });
 
-app.listen(5000);
+app.listen(5000, () => {
+  console.log("Server running on port 5000");
+});
 
-function sendSystemStatus(socket: net.Socket) {
-  socket.write(JSON.stringify(getSystemState()));
-  socket.end();
-}
-
-function getSystemState(): SystemState {
-  return {
-    lifeSupportState: getLifeSupportState(),
-    navigationState: getNavigationState(),
-  };
-}
-
-function getLifeSupportState(): LifeSupportState {
-  return {
-    bodyState: {
-      caloriesBurned: 5,
-      bodyTemperature: 80,
-    },
-    suitState: {
-      currentBattery: 5000,
-      maxBattery: 10000,
-      batteryDrain: 4.5,
-      maxOxygen: 800,
-      currentOxygen: 300,
-      tankPressure: 2500,
-      currentOxygenConsumption: 0.83,
-      humidity: 0.4,
-      radioactivity: 1,
-      heartRate: 80,
-      suitPressure: 3000,
-    },
-  };
-}
-
-function getNavigationState(): NavigationState {
-  return {
-    currentTrip: {
-      startTimestamp: new Date(),
-      endTimestamp: new Date(),
-      tripDestinations: [
-        {
-          latitude: 30.654738,
-          longitude: 10.123456,
-        },
-      ],
-    },
-    tripHistory: [],
-  };
+function sendMessage(socket: net.Socket, message: Message) {
+  socket.write(JSON.stringify(message));
 }
