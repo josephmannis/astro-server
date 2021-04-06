@@ -1,5 +1,5 @@
 import * as net from "net";
-import { isNewSpatialAnchorMessage, isRequestActiveSpatialAnchorsMessage, Message, parseMessage } from "./protocol";
+import { isHelloMessage, isNewSpatialAnchorMessage, isRequestActiveSpatialAnchorsMessage, Message, parseMessage } from "./protocol";
 import { getSystemState } from "./data";
 
 const app = net.createServer(socket => {
@@ -14,6 +14,13 @@ app.on("connection", socket => {
     console.log(message);
 
     if (message) {
+      if (isHelloMessage(message)) {
+        sendMessage(socket, {
+          type: "HELLO",
+          payload: undefined
+        })
+      }
+
       if (isNewSpatialAnchorMessage(message)) {
         sendMessage(socket, {
           type: "NEW_SPATIAL_ANCHOR_RECEIVED",
