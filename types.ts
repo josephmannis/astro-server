@@ -1,6 +1,6 @@
 export type SystemState = {
   lifeSupportState: LifeSupportState;
-  navigationState: NavigationState;
+ //  navigationState: NavigationState;
 };
 
 export type LifeSupportState = {

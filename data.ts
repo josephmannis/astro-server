@@ -3,7 +3,7 @@ import { LifeSupportState, SystemState, NavigationState } from "./types";
 export function getSystemState(): SystemState {
     return {
         lifeSupportState: getLifeSupportState(),
-        navigationState: getNavigationState(),
+        // navigationState: getNavigationState(),
     };
 }
 
@@ -23,7 +23,7 @@ export function getLifeSupportState(): LifeSupportState {
         currentOxygenConsumption: 0.83,
         humidity: 0.4,
         radioactivity: 1,
-        heartRate: 80,
+        heartRate: randomInt(60, 100),
         suitPressure: 3000,
         },
     };
@@ -45,3 +45,10 @@ export function getNavigationState(): NavigationState {
     };
 }
   
+function randomInt(min: number, max: number) { 
+    return Math.round(randomNumber(min, max));
+} 
+
+function randomNumber(min: number, max: number) { 
+    return Math.random() * (max - min) + min;
+} 

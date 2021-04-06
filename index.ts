@@ -1,13 +1,17 @@
-import * as net from "net";
+import WebSocket from 'ws';
+
 import { isHelloMessage, isNewSpatialAnchorMessage, isRequestActiveSpatialAnchorsMessage, Message, parseMessage } from "./protocol";
 import { getSystemState } from "./data";
 
-const app = net.createServer(socket => {
-  socket.pipe(socket);
+const wss = new WebSocket.Server({
+  port: 5000
 });
 
-app.on("connection", socket => {
-  socket.on('data', data => {
+wss.on('connection', ws => {
+  console.log("Connected");
+  ws.on('message', data => {
+    console.log('received: %s', data);
+
     console.log("Data");
     console.log(data.toString("utf-8"));
     const message = parseMessage(data.toString("utf-8"));
@@ -15,14 +19,14 @@ app.on("connection", socket => {
 
     if (message) {
       if (isHelloMessage(message)) {
-        sendMessage(socket, {
+        sendMessage(ws, {
           type: "HELLO",
           payload: undefined
         })
       }
 
       if (isNewSpatialAnchorMessage(message)) {
-        sendMessage(socket, {
+        sendMessage(ws, {
           type: "NEW_SPATIAL_ANCHOR_RECEIVED",
           payload: {
             anchorId: message.payload.anchorId
@@ -31,7 +35,7 @@ app.on("connection", socket => {
       }
 
       if (isRequestActiveSpatialAnchorsMessage(message)) {
-        sendMessage(socket, {
+        sendMessage(ws, {
           type: "ACTIVE_SPATIAL_ANCHORS",
           payload: {
             activeAnchorIds: []
@@ -41,17 +45,33 @@ app.on("connection", socket => {
     }
   });
 
-  sendMessage(socket, {
-    type: "SYSTEM_STATE",
-    payload: getSystemState()
+  let keepSendingUpdates = true
+  ws.on("close", () => {
+    keepSendingUpdates = false;
+    console.log("Connection closed");
   });
-  // socket.end();
+
+  const sendPeriodicSystemUpdate = () => {
+    if (!keepSendingUpdates) return;
+    
+    console.log("Sending system update");
+    sendMessage(ws, {
+      type: "SYSTEM_STATE",
+      payload: getSystemState()
+    }, () => {
+      setTimeout(() => {
+        sendPeriodicSystemUpdate();
+      }, 500);
+    });
+  }
+
+  sendPeriodicSystemUpdate();
 });
 
-app.listen(5000, () => {
-  console.log("Server running on port 5000");
-});
+wss.on("listening", function () {
+  console.log(`Listening on port ${this.options.port}`);
+})
 
-function sendMessage(socket: net.Socket, message: Message) {
-  socket.write(JSON.stringify(message));
+function sendMessage(socket: WebSocket, message: Message, cb?: (err?: Error) => void) {
+  socket.send(JSON.stringify(message), cb);
 }
