@@ -3,7 +3,7 @@ import { LifeSupportState, SystemState, NavigationState } from "./types";
 export function getSystemState(): SystemState {
     return {
         lifeSupportState: getLifeSupportState(),
-        // navigationState: getNavigationState(),
+        navigationState: getNavigationState(),
     };
 }
 
