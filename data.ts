@@ -1,48 +1,60 @@
-import { LifeSupportState, SystemState, NavigationState } from "./types";
+import { LifeSupportState, SystemState, NavigationState, MissionState } from "./types";
 
-export function getSystemState(): SystemState {
-    return {
-        lifeSupportState: getLifeSupportState(),
-        navigationState: getNavigationState(),
-    };
-}
+export default class MockData {
+    startDate = new Date();
 
-export function getLifeSupportState(): LifeSupportState {
-    return {
-        bodyState: {
-        caloriesBurned: 5,
-        bodyTemperature: 80,
-        },
-        suitState: {
-        currentBattery: 5000,
-        maxBattery: 10000,
-        batteryDrain: 4.5,
-        maxOxygen: 800,
-        currentOxygen: 300,
-        tankPressure: 2500,
-        currentOxygenConsumption: 0.83,
-        humidity: 0.4,
-        radioactivity: 1,
-        heartRate: randomInt(60, 100),
-        suitPressure: 3000,
-        },
-    };
-}
-
-export function getNavigationState(): NavigationState {
-    return {
-        currentTrip: {
-        startTimestamp: new Date(),
-        endTimestamp: new Date(),
-        tripDestinations: [
-            {
-            latitude: 30.654738,
-            longitude: 10.123456,
+    getSystemState(): SystemState {
+        return {
+            lifeSupportState: this.getLifeSupportState(),
+            navigationState: this.getNavigationState(),
+            missionState: this.getMissionState()
+        };
+    }
+    
+    getLifeSupportState(): LifeSupportState {
+        return {
+            bodyState: {
+                caloriesBurned: 5,
+                bodyTemperature: 80,
             },
-        ],
-        },
-        tripHistory: [],
-    };
+            suitState: {
+                currentBattery: 5000,
+                maxBattery: 10000,
+                batteryDrain: 4.5,
+                maxOxygen: 800,
+                currentOxygen: 300,
+                tankPressure: 2500,
+                currentOxygenConsumption: 0.83,
+                humidity: 0.4,
+                radioactivity: 1,
+                heartRate: randomInt(60, 100),
+                suitPressure: 3000,
+            },
+        };
+    }
+    
+    getNavigationState(): NavigationState {
+        return {
+            currentTrip: {
+            startTimestamp: new Date(),
+            endTimestamp: new Date(),
+            tripDestinations: [
+                {
+                latitude: 30.654738,
+                longitude: 10.123456,
+                },
+            ],
+            },
+            tripHistory: [],
+        };
+    }
+    
+    getMissionState(): MissionState {
+        return {
+            totalMissionLength: 90*60, // 30 min
+            missionTimeElapsed: Math.round(((new Date()).getTime() - this.startDate.getTime())/1000)
+        };
+    }
 }
   
 function randomInt(min: number, max: number) { 

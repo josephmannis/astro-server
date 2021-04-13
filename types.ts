@@ -1,6 +1,7 @@
 export type SystemState = {
   lifeSupportState: LifeSupportState;
   navigationState: NavigationState;
+  missionState: MissionState;
 };
 
 export type LifeSupportState = {
@@ -58,3 +59,10 @@ type Point = {
   // ##.######
   longitude: number;
 };
+
+export type MissionState = {
+  // seconds
+  totalMissionLength: number;
+  // seconds
+  missionTimeElapsed: number;
+}

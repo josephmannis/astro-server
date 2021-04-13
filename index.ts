@@ -1,7 +1,7 @@
+import MockData from './data';
 import WebSocket from 'ws';
 
 import { isHelloMessage, isNewSpatialAnchorMessage, isRequestActiveSpatialAnchorsMessage, Message, parseMessage } from "./protocol";
-import { getSystemState } from "./data";
 
 const wss = new WebSocket.Server({
   port: 5000
@@ -9,6 +9,9 @@ const wss = new WebSocket.Server({
 
 wss.on('connection', ws => {
   console.log("Connected");
+
+  const mockData = new MockData();
+
   ws.on('message', data => {
     console.log('received: %s', data);
 
@@ -57,7 +60,7 @@ wss.on('connection', ws => {
     console.log("Sending system update");
     sendMessage(ws, {
       type: "SYSTEM_STATE",
-      payload: getSystemState()
+      payload: mockData.getSystemState()
     }, () => {
       setTimeout(() => {
         sendPeriodicSystemUpdate();
