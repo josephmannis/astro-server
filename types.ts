@@ -66,3 +66,13 @@ export type MissionState = {
   // seconds
   missionTimeElapsed: number;
 }
+
+export type TaskListState = {
+  tasks: Array<TaskState>;
+}
+
+export type TaskState = {
+  description: string;
+  time: string;
+  subtasks: string[];
+}
