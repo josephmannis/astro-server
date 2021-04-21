@@ -76,3 +76,13 @@ export type TaskState = {
   time: string;
   subtasks: string[];
 }
+
+export type CommsListState = {
+  voiceIndicators: Array<AstronautVoiceIndicatorState>;
+}
+
+export type AstronautVoiceIndicatorState = {
+  astronautName: string;
+  active: boolean;
+  color: string;
+}

@@ -1,4 +1,4 @@
-import { SystemState, TaskListState } from "./types";
+import { SystemState, TaskListState, CommsListState } from "./types";
 
 export interface MessageBase<T extends string, P = undefined> {
   type: T;
@@ -21,7 +21,7 @@ export function parseMessage(m: string): MessageBase<string, unknown> | null {
 
 
 // messages
-export type Message = HelloMessage | GoodbyeMessage | SystemStateMessage | NewSpatialAnchorMessage | NewSpatialAnchorReceivedMessage | RequestActiveSpatialAnchorsMessage | ActiveSpatialAnchorsMessage | TaskListUpdateMessage;
+export type Message = HelloMessage | GoodbyeMessage | SystemStateMessage | NewSpatialAnchorMessage | NewSpatialAnchorReceivedMessage | RequestActiveSpatialAnchorsMessage | ActiveSpatialAnchorsMessage | TaskListUpdateMessage | CommsListUpdateMessage;
 
 export type HelloMessage = MessageBase<"HELLO">;
 export function isHelloMessage(m: MessageBase<string, unknown>): m is HelloMessage {
@@ -53,3 +53,5 @@ export function isRequestActiveSpatialAnchorsMessage(m: MessageBase<string, unkn
 export type ActiveSpatialAnchorsMessage = MessageBase<"ACTIVE_SPATIAL_ANCHORS", { activeAnchorIds: string[] }>;
 
 export type TaskListUpdateMessage = MessageBase<"TASK_LIST", TaskListState>;
+
+export type CommsListUpdateMessage = MessageBase<"COMMS_LIST", CommsListState>;

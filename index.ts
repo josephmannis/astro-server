@@ -2,7 +2,7 @@ import MockData from './data';
 import WebSocket from 'ws';
 
 import { isHelloMessage, isNewSpatialAnchorMessage, isRequestActiveSpatialAnchorsMessage, Message, parseMessage } from "./protocol";
-import { TaskState } from 'types';
+import { AstronautVoiceIndicatorState, TaskState } from 'types';
 
 const stdin = process.openStdin(); 
 // require('tty').setRawMode(true);    
@@ -74,6 +74,23 @@ wss.on('connection', ws => {
   }
 
   sendPeriodicTaskListUpdate();
+
+  const sendPeriodicCommsListUpdate = () => {
+    if (!keepSendingUpdates) return;
+    
+    console.log("Sending comms list update");
+
+    sendMessage(ws, {
+      type: "COMMS_LIST",
+      payload: mockData.getCommsState()
+    }, () => {
+      setTimeout(() => {
+        sendPeriodicCommsListUpdate();
+      }, 3000);
+    });
+  }
+
+  sendPeriodicCommsListUpdate();
 
   // stdin.on('keypress', (chunk, key) => {
   //   if (!keepSendingUpdates) return;
