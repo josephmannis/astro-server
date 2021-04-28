@@ -1,15 +1,7 @@
-import { LifeSupportState, SystemState, NavigationState, MissionState, CommsListState } from "./types";
+import { LifeSupportState, NavigationState } from "./types";
 
-export default class MockData {
+export default class AstronautMockData {
     startDate = new Date();
-
-    getSystemState(): SystemState {
-        return {
-            lifeSupportState: this.getLifeSupportState(),
-            navigationState: this.getNavigationState(),
-            missionState: this.getMissionState()
-        };
-    }
     
     getLifeSupportState(): LifeSupportState {
         return {
@@ -47,35 +39,6 @@ export default class MockData {
             },
             tripHistory: [],
         };
-    }
-    
-    getMissionState(): MissionState {
-        return {
-            totalMissionLength: 90*60, // 30 min
-            missionTimeElapsed: Math.round(((new Date()).getTime() - this.startDate.getTime())/1000)
-        };
-    }
-
-    getCommsState(): CommsListState {
-        return {
-            voiceIndicators: [
-                {
-                    astronautName: "Ground",
-                    active: true,
-                    color: '#76B3EF'
-                },
-                {
-                    astronautName: "Cobb",
-                    active: true,
-                    color: '#76EF98'
-                },
-                {
-                    astronautName: "Stevens",
-                    active: false,
-                    color: '#76EF98'
-                }
-            ]
-        }
     }
 }
   
